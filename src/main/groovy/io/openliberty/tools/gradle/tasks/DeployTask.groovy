@@ -522,6 +522,21 @@ class DeployTask extends AbstractServerTask {
         } catch (UnknownConfigurationException uce) {
             logger.debug("No compile configuration detected when adding embedded libs to loose ear file.")
         }
+		
+//		try {
+//			if (project.configurations.getByName('implementation') != null) {
+//				//Get only the compile dependencies that are included in the war
+//				File[] filesAsDeps = project.configurations.implementation.minus(project.configurations.providedCompile).getFiles().toArray()
+//				for (File f : filesAsDeps){
+//					String extension = FilenameUtils.getExtension(f.getAbsolutePath())
+//					if(extension.equals("jar")){
+//						addLibrary(parent, looseApp, dir, f);
+//					}
+//				}
+//			}
+//		} catch (UnknownConfigurationException uce) {
+//			logger.debug("No compile configuration detected when adding embedded libs to loose ear file.")
+//		}
     }
 
     private void addLibrary(Element parent, LooseApplication looseApp, String dir, File lib) throws GradleException {

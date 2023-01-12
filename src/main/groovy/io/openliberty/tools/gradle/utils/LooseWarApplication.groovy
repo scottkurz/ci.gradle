@@ -20,7 +20,7 @@ public class LooseWarApplication extends LooseApplication {
     }
 
     public void addSourceDir() throws Exception {
-        File sourceDir = getWarSourceDir(task.getProject());
+        File sourceDir = addSourceDirToWar(task.getProject());
 		config.addDir(sourceDir, "/")
     }
 	
