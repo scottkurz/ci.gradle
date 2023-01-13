@@ -557,9 +557,10 @@ class DeployTask extends AbstractServerTask {
     }
 
     public static String getProjectPath(File parentProjectDir, File dep) {
-        String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+"/","")
+        //String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+"/","")
+		String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+File.separator,"")
         String projectPath = dep.getAbsolutePath().replace(dependencyPathPortion,"")
-        Pattern pattern = Pattern.compile("/build/.*")
+        Pattern pattern = Pattern.compile(File.separator + "build" + File.separator + ".*")
         Matcher matcher = pattern.matcher(dependencyPathPortion)
         projectPath = matcher.replaceAll("")
         return projectPath;
