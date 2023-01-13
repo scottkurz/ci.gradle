@@ -45,6 +45,7 @@ import java.text.MessageFormat
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.io.File
+import java.nio.file.Path
 
 class DeployTask extends AbstractServerTask {
 
@@ -557,12 +558,35 @@ class DeployTask extends AbstractServerTask {
     }
 
     public static String getProjectPath(File parentProjectDir, File dep) {
-        //String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+"/","")
+		
+		Path parentProjPath = parentProjectDir.toPath()
+		Path depPath = dep.toPath()
+		String dependencyPathPortionPath = parentProjPath.relativize(depPath).toString()
+		
+		System.out.println("SKSK:dependencyPathPortionPath = " + dependencyPathPortionPath)
+		
+		// We want one backslash (\) in the regex, so write two as we're writing the Java String literal below
+		String patternStr = "\\" + File.separator + "build" + "\\" + File.separator + ".*"
+        
+		// parentProjDir = C:\aaa\Work\tmp\gr2\finish
+		// dep = C:\aaa\Work\tmp\gr2\finish\war\build\resources\main
+		
+		//String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+"/","")
 		String dependencyPathPortion = dep.getAbsolutePath().replace(parentProjectDir.getAbsolutePath()+File.separator,"")
+		// dependencyPathPortion = war\build\resources\main
+		
+		System.out.println("SKSK:dependencyPathPortion = " + dependencyPathPortion)
+		
         String projectPath = dep.getAbsolutePath().replace(dependencyPathPortion,"")
-        Pattern pattern = Pattern.compile(File.separator + "build" + File.separator + ".*")
+		System.out.println("SKSK:projectPath before= " + projectPath)
+		// projectPath = C:\aaa\Work\tmp\gr2\finish\
+		
+        //Pattern pattern = Pattern.compile(File.separator + "build" + File.separator + ".*")
+		Pattern pattern = Pattern.compile(patternStr)
         Matcher matcher = pattern.matcher(dependencyPathPortion)
         projectPath = matcher.replaceAll("")
+		
+		System.out.println("SKSK:projectPath after= " + projectPath)
         return projectPath;
     }
 

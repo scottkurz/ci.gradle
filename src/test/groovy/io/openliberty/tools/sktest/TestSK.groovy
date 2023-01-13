@@ -12,12 +12,13 @@ import io.openliberty.tools.gradle.tasks.DeployTask
 
 public class TestSK {
 
-    static File dir1 = new File("src/test/resources/loose-ear-test")
-    static File dir2 = new File("src/test/resources/loose-ear-test/a/b/c")
+	static File dir1 = new File("src/test/resources/loose-ear-test")
+    static File dir2 = new File("src/test/resources/loose-ear-test/ejb-war/build/resources/main")
+    
 
     @Test
     public void test1() {
 		String retVal = DeployTask.getProjectPath(dir1, dir2)
-		System.out.println("SKSK: retVal = " + retVal)
+		assert retVal == "ejb-war"		
     }
 }
