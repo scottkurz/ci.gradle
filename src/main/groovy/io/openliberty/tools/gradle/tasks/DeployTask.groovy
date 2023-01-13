@@ -345,7 +345,7 @@ class DeployTask extends AbstractServerTask {
         return false;
     }
 
-    private void addWarEmbeddedLib(Element parent, LooseWarApplication looseApp, Task task) throws Exception {
+    private void addWarEmbeddedLib(Element parent, LooseApplication looseApp, Task task) throws Exception {
         ArrayList<File> deps = new ArrayList<File>();
         task.classpath.each {deps.add(it)}
         //Removes WEB-INF/lib/main directory since it is not rquired in the xml
@@ -415,7 +415,9 @@ class DeployTask extends AbstractServerTask {
                         break;
                     case "war":
                         Element warElement = looseEar.addWarModule(dependencyProject)
-                        addEmbeddedLib(warElement, dependencyProject, looseEar, "/WEB-INF/lib/")
+                        //addEmbeddedLib(warElement, dependencyProject, looseEar, "/WEB-INF/lib/")
+                        Task warTask = dependencyProject.tasks.findByPath(":"+dependencyProject.name + ':war')
+                        addWarEmbeddedLib(warElement, looseEar, warTask);
                         break;
                     default:
                         logger.warn('Application ' + dependencyProject.getName() + ' is expressed as ' + projectType + ' which is not a supported input type. Define applications using Task or File objects of type war, ear, or jar.')
