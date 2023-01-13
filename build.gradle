@@ -1,3 +1,19 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.12.0"
+    }
+}
+
+plugins {
+ id "com.dorongold.task-tree" version "2.1.1"
+}
+
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
@@ -10,7 +26,15 @@ apply plugin: "com.gradle.plugin-publish"
 
 archivesBaseName = 'liberty-gradle-plugin'
 group = 'io.openliberty.tools'
-version = '3.4.1-SNAPSHOT'
+version = '3.4.2-SKSK'
+
+
+//java {
+ //   toolchain {
+  //      languageVersion = JavaLanguageVersion.of(11)
+   // }
+//}
+
 
 repositories {
     mavenLocal()
@@ -23,17 +47,8 @@ repositories {
     }
 }
 
-buildscript {
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "com.gradle.publish:plugin-publish-plugin:0.12.0"
-    }
-}
+
+
 
 configurations {
     provided
@@ -60,7 +75,7 @@ compileTestGroovy {
 }
 
 def libertyAntVersion = "1.9.10"
-def libertyCommonVersion = "1.8.21-SNAPSHOT"
+def libertyCommonVersion = "1.8.21"
 
 dependencies {
     implementation gradleApi()
@@ -152,6 +167,9 @@ test {
             }
         }
     }
+
+    System.out.println("SKSK: " + project.properties)
+
     if (project.hasProperty('test.exclude')){
         for (String pattern: project.property('test.exclude').split(',')) {
             exclude pattern
@@ -162,7 +180,9 @@ test {
             include pattern
         }
     }
+
 }
+
 
 pluginBundle {
     website = 'https://github.com/OpenLiberty/ci.gradle'
