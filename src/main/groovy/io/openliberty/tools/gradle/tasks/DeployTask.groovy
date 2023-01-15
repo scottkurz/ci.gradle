@@ -355,18 +355,28 @@ class DeployTask extends AbstractServerTask {
         }
         File parentProjectDir = new File(task.getProject().getRootProject().rootDir.getAbsolutePath())
         for (File dep: deps) {
-            String dependentProjectName = "project ':"+getProjectPath(parentProjectDir, dep)+"'"
-            Project siblingProject = project.getRootProject().findProject(dependentProjectName)
-            boolean isCurrentProject = ((task.getProject().toString()).equals(dependentProjectName))
+            String dependentProjectPath = getProjectPath(parentProjectDir, dep)
+            Project siblingProject = project.getRootProject().findProject(dependentProjectPath)
+            String taskProjectName = task.project.name
+            boolean isCurrentProject = task.project.name.equals(dependentProjectPath)
             if (!isCurrentProject && siblingProject != null){
                 Element archive = looseApp.addArchive(parent, "/WEB-INF/lib/"+ dep.getName());
-                looseApp.addOutputDirectory(archive, siblingProject, "/");
-                Task resourceTask = siblingProject.getTasks().findByPath(":"+dependentProjectName+":processResources");
+                //looseApp.addOutputDirectory(archive, siblingProject, "/");
+                Task compileJavaTask = siblingProject.getTasks().findByPath(":"+dependentProjectPath+":compileJava");
+                if (compileJavaTask.destinationDir != null){
+                    looseApp.addOutputDir(archive, compileJavaTask.destinationDir, "/");
+                }
+                Task resourceTask = siblingProject.getTasks().findByPath(":"+dependentProjectPath+":processResources");
                 if (resourceTask.getDestinationDir() != null){
                     looseApp.addOutputDir(archive, resourceTask.getDestinationDir(), "/");
                 }
-                File manifestFile = project.sourceSets.main.getOutput().getResourcesDir().getParentFile()
-                looseApp.addManifestFileWithParent(archive, manifestFile);
+                File manifestFileDir = siblingProject.sourceSets.main.output.resourcesDir.parentFile.parentFile
+				
+				// Don't know how to get the manifest file name from task so hard-code based on observed pattern
+				// Otherwise, if we don't match the location we'll default to the EAR-level default MF location
+				File manifestFile = new File(manifestFileDir, "tmp" + File.separator + dependentProjectPath + File.separator + "MANIFEST.MF")
+				looseApp.addManifestFileWithParent(archive, manifestFile, manifestFileDir.toString());
+				
             } else if(FilenameUtils.getExtension(dep.getAbsolutePath()).equalsIgnoreCase("jar")){
                 addLibrary(parent, looseApp, "/WEB-INF/lib/", dep);
             } else {
@@ -397,7 +407,7 @@ class DeployTask extends AbstractServerTask {
         if(filesAsDeps.size() == deployDeps.size()){
             for(int i = 0; i<filesAsDeps.size(); i++) {
                 completeDeployDeps.put(filesAsDeps[i], deployDeps[i])
-            }
+            }			
         }
 
         logger.info(MessageFormat.format("Number of deploy dependencies for " + task.project.name + " : " + completeDeployDeps.size()))
